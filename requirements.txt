@@ -1,0 +1,4 @@
+jellyfinapi
+python-dotenv==0.21.0
+python_dateutil==2.8.2
+rich==12.6.0
