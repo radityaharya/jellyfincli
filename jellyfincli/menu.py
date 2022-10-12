@@ -23,9 +23,9 @@ Jellyfin Version: {server_info['version']}
 Operating System: {server_info['operating_system']}
 """
         )
-        if server_info["has_update_available"] == True:
+        if server_info["has_update_available"] is True:
             self.jf.console.print("[bold red]Update Available[/bold red]")
-        if server_info["has_pending_restart"] == True:
+        if server_info["has_pending_restart"] is True:
             self.jf.console.print("[bold red]Restart Required[/bold red]")
         return ""
 
@@ -64,9 +64,11 @@ Operating System: {server_info['operating_system']}
         for menu in menus:
             self.jf.console.print(f"[bold]{menu}[/bold]")
             for method in menus[menu]:
-                help_string = getattr(self.jf, method).__doc__
-                help_string = help_string.split(":")[0].strip()
-
+                try:
+                    help_string = getattr(self.jf, method).__doc__
+                    help_string = help_string.split(":")[0].strip()
+                except AttributeError as e:
+                    help_string = ""
                 self.jf.console.print(
                     f"    {count}. {method.replace('_', ' ')}: {help_string}"
                 )
@@ -100,23 +102,28 @@ Operating System: {server_info['operating_system']}
                     f"[bold]\n{method.__name__} requires arguments[/bold]"
                 )
                 args = []
-                for arg in method.__code__.co_varnames[1:]:
-                    arg_type = method.__annotations__[arg].__name__
-                    default = method.__defaults__[
-                        method.__code__.co_varnames.index(arg)
-                        - method.__code__.co_argcount
-                    ]
-                    arg_input = self.jf.console.input(
-                        f"[bold]{arg}\[type: {arg_type}] \[{default}]:[/bold] "
-                    )
-                    # change arg_input to the correct type
-                    if arg_type == "str":
-                        arg_input = str(arg_input)
-                    elif arg_type == "int":
-                        arg_input = int(arg_input)
-                    elif arg_type == "bool":
-                        arg_input = bool(arg_input)
-                    args.append(arg_input)
+                try:
+                    for arg in method.__code__.co_varnames[1:]:
+                        arg_type = method.__annotations__[arg].__name__
+                        default = method.__defaults__[
+                            method.__code__.co_varnames.index(arg)
+                            - method.__code__.co_argcount
+                        ]
+                        arg_input = self.jf.console.input(
+                            f"[bold]{arg}\[type: {arg_type}] \[{default}]:[/bold] "
+                        )
+                        # change arg_input to the correct type
+                        if arg_type == "str":
+                            arg_input = str(arg_input)
+                        elif arg_type == "int":
+                            arg_input = int(arg_input)
+                        elif arg_type == "bool":
+                            arg_input = bool(arg_input)
+                        else :
+                            arg_input = arg_input
+                        args.append(arg_input)
+                except Exception as e:
+                    self.jf.console.print(f"[bold red]Error: {e}[/bold red]")
                 method(*args)
             else:
                 method()

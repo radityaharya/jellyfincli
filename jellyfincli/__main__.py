@@ -17,8 +17,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--refresh", help="refresh library or item", choices=["library", "item"]
     )
+    parser.add_argument("--create", help="creates new {option}", choices=["user", "library"])
     parser.add_argument("--library_name", help="library name")
     parser.add_argument("--library_id", help="library id")
+    parser.add_argument("--username", help="username")
+    parser.add_argument("--password", help="password")
     parser.add_argument("--item_id", help="item id")
     parser.add_argument(
         "--save",
@@ -61,7 +64,7 @@ if __name__ == "__main__":
         elif args.list == "libraries":
             jf.get_libraries()
 
-    if args.refresh:
+    elif args.refresh:
         if args.refresh == "library":
             if args.library_id:
                 jf.refresh_library(library_id=args.library_id)
@@ -76,7 +79,9 @@ if __name__ == "__main__":
                 jf.refresh_item(item_id=args.item_id)
             else:
                 print("Please specify [bold]--library_id[/bold]")
-
+    elif args.create:
+        if args.create=="user": 
+            jf.create_user(args.username, args.password)
     # if no arguments are passed except for -v, run the menu
     if not any(vars(args).values()) or args.verbose > 0:
         Menu(jf).interactive()

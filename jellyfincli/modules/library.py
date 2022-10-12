@@ -41,14 +41,14 @@ class Library:
             )
         return None
 
-    def _get_library_id_by_name(self, name: str) -> str | None:
+    def _get_library_id_by_name(self, name: str) -> str:
         mediafolders = self.jf_client.library.get_media_folders()
         for library in mediafolders.items:
             if library.name.lower() == name.lower():
                 return library.id
         return None
 
-    def _get_library_name_by_id(self, item_id: str) -> str | None:
+    def _get_library_name_by_id(self, item_id: str) -> str:
         mediafolders = self.jf_client.library.get_media_folders()
         for library in mediafolders.items:
             if library.id == item_id:
